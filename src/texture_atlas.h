@@ -98,13 +98,13 @@ public:
     TextureID registerTexture(const std::string& filepath) {
         sf::Image temp;
         if (!temp.loadFromFile(filepath)) {
-            throw;
+            assert(false && "Could not load image filepath");
         }
 
         sf::Image img = padImage(temp, mPadding);
         auto [canPack, id] = mPacker.pack(sf::Vector2f(img.getSize()));
         if (!canPack) {
-            throw;
+            assert(false && "Could not pack");
         }
 
         mTexture.update(img, sf::Vector2u(mPacker.getBounds(id).position));
@@ -124,7 +124,10 @@ public:
         return realRect;
     }
 
-    sf::Vector2u getSizePixels(TextureID id) const { return {}; }
+    sf::Vector2u getSizePixels(TextureID id) const {
+        sf::FloatRect rectPadded = mPacker.getBounds(id);
+        return sf::Vector2u{rectPadded.size - sf::Vector2f{2.f * mPadding, 2.f * mPadding}};
+    }
 
     const sf::Texture& getTexture() const { return mTexture; }
 
