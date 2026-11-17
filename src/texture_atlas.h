@@ -95,7 +95,22 @@ public:
     TextureAtlas(sf::Vector2u binSize, size_t padding)
         : mTexture(binSize), mPacker(sf::Vector2f(mTexture.getSize())), mPadding{padding} {}
 
-    TextureID registerTexture(const std::string& filepath) { return {}; }
+    TextureID registerTexture(const std::string& filepath) {
+        sf::Image temp;
+        if (!temp.loadFromFile(filepath)) {
+            throw;
+        }
+
+        sf::Image img = padImage(temp, mPadding);
+        auto [canPack, id] = mPacker.pack(sf::Vector2f(img.getSize()));
+        if (!canPack) {
+            throw;
+        }
+
+        mTexture.update(img, sf::Vector2u(mPacker.getBounds(id).position));
+
+        return id;
+    }
 
     sf::FloatRect getBoundsUV(TextureID id) const { return {}; }
 
