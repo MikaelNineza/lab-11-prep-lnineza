@@ -112,7 +112,17 @@ public:
         return id;
     }
 
-    sf::FloatRect getBoundsUV(TextureID id) const { return {}; }
+    sf::FloatRect getBoundsUV(TextureID id) const {
+        sf::FloatRect rectPadded = mPacker.getBounds(id);
+        sf::Vector2f texSize(mTexture.getSize());
+        sf::FloatRect realRect;
+
+        realRect.position = {sf::Vector2f{static_cast<float>(mPadding), static_cast<float>(mPadding)} + rectPadded.position};
+        realRect.size = {rectPadded.size - sf::Vector2f{2.f * mPadding, 2.f * mPadding}};
+        realRect.position = realRect.position / texSize;
+        realRect.size = realRect.size / texSize;
+        return realRect;
+    }
 
     sf::Vector2u getSizePixels(TextureID id) const { return {}; }
 
